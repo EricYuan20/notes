@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ### **Java的基础类型**
 
 byte,short,long,int,char,float,double,boolean
