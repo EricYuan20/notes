@@ -120,3 +120,11 @@ ConcurrentHashMap 和 HashMap 思路是差不多的，但是因为它支持并�
 **并行度（默认16）**
 
 ​		concurrencyLevel：并行级别、并发数、Segment 数，怎么翻译不重要，理解它。默认是 16，也就是说 ConcurrentHashMap 有 16 个 Segments，所以理论上，这个时候，最多可以同时支持 16 个线程并发写，只要它们的操作分别分布在不同的 Segment 上。这个值可以在初始化的时候设置为其他值，但是一旦初始化以后，它是不可以扩容的。再具体到每个 Segment 内部，其实每个 Segment 很像之前介绍的 HashMap，不过它要保证线程安全，所以处理起来要麻烦些。
+
+## ArrayList、LinkedList 和 Vector 的区别
+
+ArrayList、LinkedList、Vector 都是位于 `java.util` 包下的工具类，它们都实现了 List 接口。
+
+- ArrayList 的底层是动态数组，它是基于数组的特性而演变出来的，所以ArrayList 遍历访问非常快，但是增删比较慢，因为会涉及到数组的拷贝。ArrayList 是一个非线程安全的容器，在并发场景下会造成问题，如果想使用线程安全的容器的话，推荐使用 `Collections.synchronizedList`；ArrayList 在扩容时会增加 50% 的容量。
+- LinkedList 的底层是双向链表，所以 LinkedList 的增加和删除非常快，只需把元素删除，把各自的指针指向新的元素即可。但是 LinkedList 遍历比较慢，因为只有每次访问一个元素才能知道下一个元素的值。LinkedList 也是一个非线程安全的容器，推荐使用 `Collections.synchronizedList`
+- Vector 向量是最早出现的集合容器，Vector 是一个线程安全的容器，它的每个方法都粗暴的加上了 `synchronized` 锁，所以它的增删、遍历效率都很低。Vector 在扩容时，它的容量会增加一倍。
