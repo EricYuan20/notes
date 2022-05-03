@@ -13,6 +13,10 @@ byte,short,long,int,char,float,double,boolean
 
 多态是指程序中定义的引用变量所指向的具体类型和通过该引用变量发出的方法调用在编程时并不确定，而是在程序运行期间才确定(比如：向上转型，只有运行才能确定其对象属性)。方法覆盖和重载体现了多态性。
 
+### String s1 = new String("abc") 在内存中创建了几个对象
+
+一个或者两个，String s1 是声明了一个 String 类型的 s1 变量，它不是对象。使用 `new` 关键字会在堆中创建一个对象，另外一个对象是 `abc` ，它会在常量池中创建，所以一共创建了两个对象；如果 abc 在常量池中已经存在的话，那么就会创建一个对象。
+
 ## **String、StringBuffer 和 StringBuilder 的区别是什么?**
 #### **线程安全**
 
@@ -26,7 +30,7 @@ byte,short,long,int,char,float,double,boolean
 
 1. `String`的值不可变的。
 2. `StringBuffer`和`StringBuilder`的值是可变的，底层使用的是可变字符数组：`char[] value;`
-  **使用场景**
+    **使用场景**
 - 如果需要操作少量的数据用 String
 - 单线程操作字符串缓冲区的情况下操作大量数据使用 StringBuilder
 - 多线程操作字符串缓冲区 下操作大量数据使用 StringBuffer
@@ -59,7 +63,17 @@ final 修饰的变量不可更改，**其不可更改指的是其引用不可修
 
 ## Object类有哪些常用的方法？
 
-equals 方法，hashCode 方法，toString 方法，wait 和 notify 系列的几个， getclass
+Object 类是所有对象的父类，它里面包含一些所有对象都能够使用的方法
+
+- hashCode()：用于计算对象的哈希码
+- equals()：用于对象之间比较值是否相等
+- toString(): 用于把对象转换成为字符串
+- clone(): 用于对象之间的拷贝
+- wait(): 用于实现对象之间的等待
+- notify(): 用于通知对象释放资源
+- notifyAll(): 用于通知所有对象释放资源
+- finalize(): 用于告知垃圾回收器进行垃圾回收
+- getClass(): 用于获得对象类
 
 ### == 和 equals 的区别
 
@@ -88,4 +102,6 @@ equals 方法，hashCode 方法，toString 方法，wait 和 notify 系列的几
 文件未找到异常：FileNotFoundException
 
 字符串转换为数字异常：NumberFormatException
+
+
 
