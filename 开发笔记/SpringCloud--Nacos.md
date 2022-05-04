@@ -73,7 +73,7 @@ spring.cloud.nacos.discovery.server-addr=127.0.0.1:8848
 
 ## **3、添加Nacos客户端注解**
 
-在客户端微服务启动类中添加注解
+在客户端微服务启动类中添加注解 
 
 ```java
 @EnableDiscoveryClient
