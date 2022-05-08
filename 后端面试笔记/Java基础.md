@@ -1,5 +1,6 @@
 ## **Java的基础类型**
 byte,short,long,int,char,float,double,boolean
+
 ## **Java面向对象的三大特性**
 **封装**  
 
@@ -27,7 +28,7 @@ byte,short,long,int,char,float,double,boolean
 
 多态是指程序中定义的引用变量所指向的具体类型和通过该引用变量发出的方法调用在编程时并不确定，而是在程序运行期间才确定(比如：向上转型，只有运行才能确定其对象属性)。方法覆盖和重载体现了多态性。
 
-### String s1 = new String("abc") 在内存中创建了几个对象
+## String s1 = new String("abc") 在内存中创建了几个对象
 
 一个或者两个，String s1 是声明了一个 String 类型的 s1 变量，它不是对象。使用 `new` 关键字会在堆中创建一个对象，另外一个对象是 `abc` ，它会在常量池中创建，所以一共创建了两个对象；如果 abc 在常量池中已经存在的话，那么就会创建一个对象。
 
@@ -89,7 +90,7 @@ Object 类是所有对象的父类，它里面包含一些所有对象都能够�
 - finalize(): 用于告知垃圾回收器进行垃圾回收
 - getClass(): 用于获得对象类
 
-### == 和 equals 的区别
+## == 和 equals 的区别
 
 == 对于基本类型来说是值比较，对于引用类型来说是比较的是引用；而 equals 默认情况下是 `==`比较，只是很多类重写了 equals 方法，比如 String、Integer 等把它变成了值比较，所以一般情况下 equals 比较的是值是否相等。
 
