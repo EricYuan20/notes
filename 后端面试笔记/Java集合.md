@@ -21,13 +21,13 @@
 - Set、Map 容器有基于哈希存储和红黑树两种方式实现
 - Set 基于 Map 实现，Set 里的元素值就是 Map的键值
 
+
+
 ## List
 
 ### ArrayList（数组）
 
 ​		ArrayList 是最常用的 List 实现类，内部是通过数组实现的，它允许对元素进行快速随机访问。数组的缺点是每个元素之间不能有间隔，当数组大小不满足时需要增加存储能力，就要将已经有数组的数据复制到新的存储空间中。当从 ArrayList 的中间位置插入或者删除元素时，需要对数组进行复制、移动、代价比较高。因此，它适合随机查找和遍历，不适合插入和删除。
-
-
 
 ### Vector（数组实现、线程同步）
 
@@ -56,16 +56,15 @@
 ### TreeSet（二叉树）
 
 1. TreeSet()是使用二叉树的原理对新 add()的对象按照指定的顺序排序（升序、降序），每增加一个对象都会进行排序，将对象插入的二叉树指定的位置。
-
 2. Integer 和 String 对象都可以进行默认的 TreeSet 排序，而自定义类的对象是不可以的，自己定义的类必须实现 Comparable 接口，并且覆写相应的 compareTo()函数，才可以正常使用。
-
 3. 在覆写 compare()函数时，要返回相应的值才能使 TreeSet 按照一定的规则来排序
-
 4. 比较此对象与指定对象的顺序。如果该对象小于、等于或大于指定对象，则分别返回负整数、零或正整数。
 
 ### LinkHashSet（HashSet+LinkedHashMap）
 
 ​		对于 LinkedHashSet 而言，它继承与 HashSet、又基于 LinkedHashMap 来实现的。LinkedHashSet 底层使用 LinkedHashMap 来保存所有元素，它继承与 HashSet，其所有的方法操作上又与 HashSet 相同，因此LinkedHashSet 的实现上非常简单，只提供了四个构造方法，并通过传递一个标识参数，调用父类的构造器，底层构造一个 LinkedHashMap 来实现，在相关操作上与父类 HashSet 的操作相同，直接调用父类 HashSet 的方法即可。
+
+
 
 ## Map
 
