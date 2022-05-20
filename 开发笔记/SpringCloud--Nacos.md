@@ -20,7 +20,7 @@ Nacos主要提供以下四大功能：
 
 **（4）**Nacos结构图
 
-![img](图片/6e5b55f7-3252-4dea-81e9-e0ffd86987b4.jpg)
+![img](../图片/6e5b55f7-3252-4dea-81e9-e0ffd86987b4.jpg)
 
 ## 2、Nacos下载和安装
 
