@@ -39,4 +39,10 @@ $ docker run -itd --name mysql-test -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 m
 
 [![img](../../图片/Docker安装MySQL·/docker-mysql7.png)](https://www.runoob.com/wp-content/uploads/2016/06/docker-mysql7.png)
 
-本地连接Docker中的MySQL
+## 本地连接Docker中的MySQL
+
+修改root 可以通过任何客户端连接
+
+```sql
+$  ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY '123456';
+```
