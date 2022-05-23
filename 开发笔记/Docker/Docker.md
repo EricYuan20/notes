@@ -274,3 +274,14 @@ version   Show the docker version information           # 查看 docker 版本�
 wait      Block until a container stops, then print its exit code   # 截取容器停止时的退出状态值
 ```
 
+## 在docker容器中安装新的工具
+
+比如：
+
+```
+//先更新包管理工具
+apt-get update
+//然后安装我们需要的工具，以vim为例
+apt-get install v
+```
+

@@ -54,6 +54,14 @@ clear
 | yum clean headers                 | 删除所有头文件                                            |
 | yum clean all                     | 删除所有缓存的包和头文件                                  |
 
+## 查找指定进程格式
+
+```
+ps -ef | grep 进程关键字
+# ps -A 显示进程信息
+# ps -u root //显示root进程用户信息
+```
+
 ## vi/vim 的使用
 
 基本上 vi/vim 共分为三种模式，分别是**命令模式（Command mode）**，**输入模式（Insert mode）**和**底线命令模式（Last line mode）**。 这三种模式的作用分别是：
@@ -106,3 +114,33 @@ clear
 简单的说，我们可以将这三个模式想成底下的图标来表示：
 
 ![img](../图片/Linux/vim-vi-workmodel.png)
+
+## firewalld的基本使用
+
+ 启动： systemctl start firewalld
+
+ 查看状态： systemctl status firewalld 
+
+ 停止： systemctl disable firewalld #禁止firewall开机启动
+
+ 禁用： systemctl stop firewalld #停止firewall
+
+ 2.systemctl是RHEL7&CentOS7的服务管理工具中主要的工具，它融合之前service和chkconfig的功能于一体。
+
+ 启动一个服务：systemctl start firewalld.service
+
+ 关闭一个服务：systemctl stop firewalld.service
+
+ 重启一个服务：systemctl restart firewalld.service
+
+ 显示一个服务的状态：systemctl status firewalld.service
+
+ 在开机时启用一个服务：systemctl enable firewalld.service
+
+ 在开机时禁用一个服务：systemctl disable firewalld.service
+
+ 查看服务是否开机启动：systemctl is-enabled firewalld.service
+
+ 查看已启动的服务列表：systemctl list-unit-files|grep enabled
+
+ 查看启动失败的服务列表：systemctl --failed
