@@ -115,11 +115,16 @@ Bean 生命周期大致分为 Bean 定义、Bean 的初始化、Bean的生存期
 Spring框架支持以下五种bean的作用域：
 
 singleton : bean在每个Spring ioc 容器中只有一个实例。
+
 prototype：一个bean的定义可以有多个实例。
+
 request：每次http请求都会创建一个bean，该作用域仅在基于web的Spring ApplicationContext情形下有效。
+
 session：在一个HTTP Session中，一个bean定义对应一个实例。该作用域仅在基于web的Spring ApplicationContext情形下有效。
+
 global-session：在一个全局的HTTP Session中，一个bean定义对应一个实例。该作用域仅在基于web的Spring ApplicationContext情形下有效。
-注意： 缺省的Spring bean 的作用域是Singleton。使用 prototype 作用域需要慎重的思考，因为频繁创建和销毁 bean 会带来很大的性能开销。
+
+**注意：** 缺省的Spring bean 的作用域是Singleton。使用 prototype 作用域需要慎重的思考，因为频繁创建和销毁 bean 会带来很大的性能开销。
 
 
 
