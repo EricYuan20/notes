@@ -46,7 +46,7 @@ Spring的MVC框架是围绕DispatcherServlet来设计的，它用来处理所有
 - produces：指定返回的内容类型，当request请求头中的Accept类型中包含指定的类型才可以返回的。
 - consumes：指定处理请求的提交内容类型，比如一些json、html、text等的类型。
 - headers：指定request中必须包含那些的headed值时，它才会用该方法处理请求的。
-- params：指定request中一定要有的参数值，它才会使用该方法处理请求。
+- params：指定request中一定要有的参数值，它才会使用该方法处理请求。 
 
 ## @RequestParam
 
@@ -69,7 +69,7 @@ Spring的MVC框架是围绕DispatcherServlet来设计的，它用来处理所有
 
 ## @RestController
 
-组合了@Controller和@ResponseBody的注解**
+组合了@Controller和@ResponseBody的注解
 
 # Spring MVC怎么样设定重定向和转发的？
 
