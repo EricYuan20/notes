@@ -114,15 +114,15 @@ Bean 生命周期大致分为 Bean 定义、Bean 的初始化、Bean的生存期
 
 Spring框架支持以下五种bean的作用域：
 
-singleton : bean在每个Spring ioc 容器中只有一个实例。
+**singleton :** bean在每个Spring ioc 容器中只有一个实例。
 
-prototype：一个bean的定义可以有多个实例。
+**prototype：**一个bean的定义可以有多个实例。
 
-request：每次http请求都会创建一个bean，该作用域仅在基于web的Spring ApplicationContext情形下有效。
+**request：**每次http请求都会创建一个bean，该作用域仅在基于web的Spring ApplicationContext情形下有效。
 
-session：在一个HTTP Session中，一个bean定义对应一个实例。该作用域仅在基于web的Spring ApplicationContext情形下有效。
+**session：**在一个HTTP Session中，一个bean定义对应一个实例。该作用域仅在基于web的Spring ApplicationContext情形下有效。
 
-global-session：在一个全局的HTTP Session中，一个bean定义对应一个实例。该作用域仅在基于web的Spring ApplicationContext情形下有效。
+**global-session：**在一个全局的HTTP Session中，一个bean定义对应一个实例。该作用域仅在基于web的Spring ApplicationContext情形下有效。
 
 **注意：** 缺省的Spring bean 的作用域是Singleton。使用 prototype 作用域需要慎重的思考，因为频繁创建和销毁 bean 会带来很大的性能开销。
 
@@ -130,9 +130,9 @@ global-session：在一个全局的HTTP Session中，一个bean定义对应一�
 
 ## BeanFactory和FactoryBean的区别
 
-BeanFactory：Spring 容器最核心也是最基础的接口，本质是个工厂类，用于管理 bean 的工厂，最核心的功能是加载 bean，也就是 getBean 方法，通常我们不会直接使用该接口，而是使用其子接口。
+**BeanFactory：**Spring 容器最核心也是最基础的接口，本质是个工厂类，用于管理 bean 的工厂，最核心的功能是加载 bean，也就是 getBean 方法，通常我们不会直接使用该接口，而是使用其子接口。
 
-FactoryBean：该接口以 bean 样式定义，但是它不是一种普通的 bean，它是个工厂 bean，实现该接口的类可以自己定义要创建的 bean 实例，只需要实现它的 getObject 方法即可。
+**FactoryBean：**该接口以 bean 样式定义，但是它不是一种普通的 bean，它是个工厂 bean，实现该接口的类可以自己定义要创建的 bean 实例，只需要实现它的 getObject 方法即可。
 
 FactoryBean 被广泛应用于 Java 相关的中间件中，如果你看过一些中间件的源码，一定会看到 FactoryBean 的身影。
 
@@ -229,7 +229,7 @@ spring 有五大隔离级别，默认值为 ISOLATION_DEFAULT（使用数据库�
 
 ISOLATION_DEFAULT：用底层数据库的设置隔离级别，数据库设置的是什么我就用什么；
 
-ISOLATION_READ_UNCOMMITTED：未提交读，最低隔离级别、事务未提交前，就可被其他事务读取（会出现幻读、脏读、不可重复读）；
+ISOLATION_READ_UNCOMMITTED：未提交读，最低隔离级别、事务未提交前，就可被其他事务读取（会出现脏读、幻读、不可重复读）；
 
 ISOLATION_READ_COMMITTED：提交读，一个事务提交后才能被其他事务读取到（会造成幻读、不可重复读），SQL server 的默认级别；
 
