@@ -39,7 +39,7 @@ Spring Boot通过提供众多起步依赖（Starter）降低项目依赖的复�
 
 SpringApplication调用的run方法的大致流程，如下图：
 
-![img](../图片/spring boot/4ECC3AECD1D8D2B62421E2D3453DC465.jpeg)
+![img](../图片/SpringBoot/4ECC3AECD1D8D2B62421E2D3453DC465.jpeg)
 
 其中，SpringApplication在run方法中重点做了以下操作：
 
