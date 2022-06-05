@@ -25,11 +25,7 @@ Spring Boot本身并不提供Spring的核心功能，而是作为Spring的脚手
 
 # Spring Boot Starter有什么用？
 
-**参考答案**
-
-Spring Boot通过提供众多起步依赖（Starter）降低项目依赖的复杂度。起步依赖本质上是一个Maven项目对象模型（Project Object Model, POM），定义了对其他库的传递依赖，这些东西加在一起即支持某项功能。很多起步依赖的命名都暗示了它们提供的某种或某类功能。
-
-举例来说，你打算把这个阅读列表应用程序做成一个Web应用程序。与其向项目的构建文件里添加一堆单独的库依赖，还不如声明这是一个Web应用程序来得简单。你只要添加Spring Boot的Web起步依赖就好了。
+Spring Boot通过提供众多起步依赖（Starter）降低项目依赖的复杂度。起步依赖本质上是一个Maven项目对象模型（Project Object Model, POM），定义了对其他库的传递依赖，这些东西加在一起即支持某项功能。
 
 
 
@@ -80,14 +76,18 @@ Spring JavaConfig 是 Spring 社区的产品，它提供了配置 Spring IoC 容
 
 # 说说你对Spring Boot注解的了解
 
-@SpringBootApplication注解：
+## @SpringBootApplication注解：
 
 在Spring Boot入口类中，唯一的一个注解就是@SpringBootApplication。它是Spring Boot项目的核心注解，用于开启自动配置，准确说是通过该注解内组合的@EnableAutoConfiguration开启了自动配置。
 
-@EnableAutoConfiguration注解：
+## @EnableAutoConfiguration注解：
 
 @EnableAutoConfiguration的主要功能是启动Spring应用程序上下文时进行自动配置，它会尝试猜测并配置项目可能需要的Bean。自动配置通常是基于项目classpath中引入的类和已定义的Bean来实现的。在此过程中，被自动配置的组件来自项目自身和项目依赖的jar包中。
 
-@Import注解：
+## @Import注解：
 
 @EnableAutoConfiguration的关键功能是通过@Import注解导入的ImportSelector来完成的。从源代码得知@Import(AutoConfigurationImportSelector.class)是@EnableAutoConfiguration注解的组成部分，也是自动配置功能的核心实现者。
+
+# 如何使用 Spring Boot 实现全局异常处理？
+
+Spring 提供了一种使用 ControllerAdvice 处理异常的非常有用的方法。 我们通过实现一个ControllerAdvice 类，来处理控制器类抛出的所有异常。
