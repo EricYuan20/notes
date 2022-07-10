@@ -1,0 +1,251 @@
+# 需求分析
+
+文章能正常发布审核，但对于一些本软件的相关敏感词过滤不了。比如：私人侦探、针孔摄象、信用卡提现、广告代理、代开发票、刻章办、出售答案、小额贷款…
+
+需要完成的功能：
+
+需要自己维护一套敏感词，在文章审核的时候，需要验证文章是否包含这些敏感词
+
+# 技术选型
+
+技术选型
+
+| **方案**               | **说明**                     |
+| ---------------------- | ---------------------------- |
+| 数据库模糊查询         | 效率太低                     |
+| String.indexOf("")查找 | 数据库量大的话也是比较慢     |
+| 全文检索               | 分词再匹配                   |
+| DFA算法                | 确定有穷自动机(一种数据结构) |
+
+# DFA实现原理
+
+DFA全称为：Deterministic Finite Automaton,即确定有穷自动机。
+
+存储：一次性的把所有的敏感词存储到了多个map中，就是下图表示这种结构
+
+敏感词：冰毒、大麻、大坏蛋
+
+![image-20220710183450190](../../图片/自管理敏感词过滤/image-20220710183450190.png)
+
+检索的过程
+
+![image-20220710183504549](../../图片/自管理敏感词过滤/image-20220710183504549.png)
+
+#### 自管理敏感词集成到文章审核中
+
+①：创建敏感词表，导入资料中wm_sensitive到leadnews_wemedia库中
+
+![image-20220710183526033](../../图片/自管理敏感词过滤/image-20220710183526033.png)
+
+```java
+package com.heima.model.wemedia.pojos;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * <p>
+ * 敏感词信息表
+ * </p>
+ *
+ * @author itheima
+ */
+@Data
+@TableName("wm_sensitive")
+public class WmSensitive implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 主键
+     */
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
+
+    /**
+     * 敏感词
+     */
+    @TableField("sensitives")
+    private String sensitives;
+
+    /**
+     * 创建时间
+     */
+    @TableField("created_time")
+    private Date createdTime;
+
+}
+```
+
+②：拷贝对应的wm_sensitive的mapper到项目中
+
+```java
+package com.heima.wemedia.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.heima.model.wemedia.pojos.WmSensitive;
+import org.apache.ibatis.annotations.Mapper;
+
+
+@Mapper
+public interface WmSensitiveMapper extends BaseMapper<WmSensitive> {
+}
+```
+
+
+
+```java
+@Autowired
+private WmSensitiveMapper wmSensitiveMapper;
+
+/**
+     * 自管理的敏感词审核
+     * @param content
+     * @param wmNews
+     * @return
+     */
+private boolean handleSensitiveScan(String content, WmNews wmNews) {
+
+    boolean flag = true;
+
+    //获取所有的敏感词
+    List<WmSensitive> wmSensitives = wmSensitiveMapper.selectList(Wrappers.<WmSensitive>lambdaQuery().select(WmSensitive::getSensitives));
+    List<String> sensitiveList = wmSensitives.stream().map(WmSensitive::getSensitives).collect(Collectors.toList());
+
+    //初始化敏感词库
+    SensitiveWordUtil.initMap(sensitiveList);
+
+    //查看文章中是否包含敏感词
+    Map<String, Integer> map = SensitiveWordUtil.matchWords(content);
+    if(map.size() >0){
+        updateWmNews(wmNews,(short) 2,"当前文章中存在违规内容"+map);
+        flag = false;
+    }
+
+    return flag;
+}
+```
+
+这里使用了SensitiveWordUtil工具类
+
+```java
+package com.heima.utils.common;
+
+
+import java.util.*;
+
+public class SensitiveWordUtil {
+
+    public static Map<String, Object> dictionaryMap = new HashMap<>();
+
+
+    /**
+     * 生成关键词字典库
+     * @param words
+     * @return
+     */
+    public static void initMap(Collection<String> words) {
+        if (words == null) {
+            System.out.println("敏感词列表不能为空");
+            return ;
+        }
+
+        // map初始长度words.size()，整个字典库的入口字数(小于words.size()，因为不同的词可能会有相同的首字)
+        Map<String, Object> map = new HashMap<>(words.size());
+        // 遍历过程中当前层次的数据
+        Map<String, Object> curMap = null;
+        Iterator<String> iterator = words.iterator();
+
+        while (iterator.hasNext()) {
+            String word = iterator.next();
+            curMap = map;
+            int len = word.length();
+            for (int i =0; i < len; i++) {
+                // 遍历每个词的字
+                String key = String.valueOf(word.charAt(i));
+                // 当前字在当前层是否存在, 不存在则新建, 当前层数据指向下一个节点, 继续判断是否存在数据
+                Map<String, Object> wordMap = (Map<String, Object>) curMap.get(key);
+                if (wordMap == null) {
+                    // 每个节点存在两个数据: 下一个节点和isEnd(是否结束标志)
+                    wordMap = new HashMap<>(2);
+                    wordMap.put("isEnd", "0");
+                    curMap.put(key, wordMap);
+                }
+                curMap = wordMap;
+                // 如果当前字是词的最后一个字，则将isEnd标志置1
+                if (i == len -1) {
+                    curMap.put("isEnd", "1");
+                }
+            }
+        }
+
+        dictionaryMap = map;
+    }
+
+    /**
+     * 搜索文本中某个文字是否匹配关键词
+     * @param text
+     * @param beginIndex
+     * @return
+     */
+    private static int checkWord(String text, int beginIndex) {
+        if (dictionaryMap == null) {
+            throw new RuntimeException("字典不能为空");
+        }
+        boolean isEnd = false;
+        int wordLength = 0;
+        Map<String, Object> curMap = dictionaryMap;
+        int len = text.length();
+        // 从文本的第beginIndex开始匹配
+        for (int i = beginIndex; i < len; i++) {
+            String key = String.valueOf(text.charAt(i));
+            // 获取当前key的下一个节点
+            curMap = (Map<String, Object>) curMap.get(key);
+            if (curMap == null) {
+                break;
+            } else {
+                wordLength ++;
+                if ("1".equals(curMap.get("isEnd"))) {
+                    isEnd = true;
+                }
+            }
+        }
+        if (!isEnd) {
+            wordLength = 0;
+        }
+        return wordLength;
+    }
+
+    /**
+     * 获取匹配的关键词和命中次数
+     * @param text
+     * @return
+     */
+    public static Map<String, Integer> matchWords(String text) {
+        Map<String, Integer> wordMap = new HashMap<>();
+        int len = text.length();
+        for (int i = 0; i < len; i++) {
+            int wordLength = checkWord(text, i);
+            if (wordLength > 0) {
+                String word = text.substring(i, i + wordLength);
+                // 添加关键词匹配次数
+                if (wordMap.containsKey(word)) {
+                    wordMap.put(word, wordMap.get(word) + 1);
+                } else {
+                    wordMap.put(word, 1);
+                }
+
+                i += wordLength - 1;
+            }
+        }
+        return wordMap;
+    }
+}
+```
+

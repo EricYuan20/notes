@@ -1,4 +1,4 @@
-创建数据库
+创建数据库@Component和@Bean都是用来注册Bean并装配到Spring容器中，但是Bean比Component的自定义性更强。可以实现一些Component实现不了的自定义加载类
 
 ```sql
 CREATE DATABASE 数据库名;
@@ -60,7 +60,7 @@ DELETE 语句
 DELETE FROM table_name [WHERE Clause]
 ```
 
-### MYSQL 事务处理主要有两种方法：
+MYSQL 事务处理主要有两种方法：
 
 1、用 BEGIN, ROLLBACK, COMMIT来实现
 
