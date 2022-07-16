@@ -1,8 +1,15 @@
-## 安装Docker
+# 安装docker社区版
 
-```java
-#1、卸载旧版本，官方文档查找 https://docs.docker.com/
-sudo yum remove docker \
+## 1.更新yum包至最新
+
+```
+yum -y update
+```
+
+## 2.卸载已经存在的旧版docker
+
+```
+yum remove docker \
                   docker-client \
                   docker-client-latest \
                   docker-common \
@@ -10,278 +17,379 @@ sudo yum remove docker \
                   docker-latest-logrotate \
                   docker-logrotate \
                   docker-engine
-# 2、设置存储库
-# 安装yum-utils包（提供yum-config-manager 实用程序）并设置稳定存储库。
-sudo yum install -y yum-utils
+```
 
-3、#设置镜像的仓库，使用国内阿里云镜像
-sudo yum-config-manager \
-	--add-repo \
-	http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
-#更新yum软件包索引
+## 有可能返回下面的结果，这是OK的，说明你之前没有安装旧版的docker，直接进入3
+
+```
+No Match for argument: docker
+No Match for argument: docker-client
+No Match for argument: docker-client-latest
+No Match for argument: docker-common
+No Match for argument: docker-latest
+No Match for argument: docker-latest-logrotate
+No Match for argument: docker-logrotate
+No Match for argument: docker-engine
+No Packages marked for removal
+```
+
+## 3.安装docker社区版
+
+```perl
+# 添加阿里云docker镜像仓库
+cd /etc/yum.repos.d && wget http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+# 更新yum配置
 yum makecache fast
-
-4、#安装docker相关源 docker-ce 社区 ee 企业版
-sudo yum install docker-ce docker-ce-cli containerd.io
-
-5、#启动docker
-systemctl start docker
-
-6、#查看docker版本
+# 安装docker-ce
+yum -y install docker-ce
+# 验证安装是否成功(有client和service两部分表示docker安装启动都成功了)
 docker version
 
-7、#运行hello-world
+Client: Docker Engine - Community
+ Version:           19.03.5
+ API version:       1.40
+ Go version:        go1.12.12
+ Git commit:        633a0ea
+ Built:             Wed Nov 13 07:25:41 2019
+ OS/Arch:           linux/amd64
+ Experimental:      false
+
+Server: Docker Engine - Community
+ Engine:
+  Version:          19.03.5
+  API version:      1.40 (minimum version 1.12)
+  Go version:       go1.12.12
+  Git commit:       633a0ea
+  Built:            Wed Nov 13 07:24:18 2019
+  OS/Arch:          linux/amd64
+  Experimental:     false
+ containerd:
+  Version:          1.2.10
+  GitCommit:        b34a5c8af56e510852c35414db4c1f4fa6172339
+ runc:
+  Version:          1.0.0-rc8+dev
+  GitCommit:        3e425f80a8c931f88e6d94a8c831b9d5aa481657
+ docker-init:
+  Version:          0.18.0
+  GitCommit:        fec3683
 ```
 
-![img](../../图片/Docker/13b80164dad34d47253cdf7053da2dd4.png)
+## 4.启动docker 并设置开机启动
 
-没找到镜像，pulling向官方远程拉取镜像，签名信息表示已经拉取到
+```bash
+# 启动
+systemctl start docker
+# 添加开机启动 # 如果是个人使用最后不要设置开机自启
+systemctl enable docker
+```
+
+## docker仓库加速
+
+由于某些原因docker hub的速度感人，所以我们需要一个国内的仓库镜像，这里使用阿里云的镜像仓库
+
+仓库列表：
+
+1. [docker-cn](https://link.juejin.cn?target=https%3A%2F%2Fregistry.docker-cn.com)
+2. [网易](https://link.juejin.cn?target=http%3A%2F%2Fhub-mirror.c.163.com)
+3. [DaoCloud](https://link.juejin.cn?target=http%3A%2F%2Ff1361db2.m.daocloud.io)
+4. [腾讯](https://link.juejin.cn?target=https%3A%2F%2Fmirror.ccs.tencentyun.com)
+5. [阿里](https://link.juejin.cn?target=https%3A%2F%2F3laho3y3.mirror.aliyuncs.com)
+
+```perl
+# 修改配置文件
+vim /usr/lib/systemd/system/docker.service
+# 在dockerd后面加参数
+ExecStart=/usr/bin/dockerd --registry-mirror=https://3laho3y3.mirror.aliyuncs.com/
+# 重新加载配置
+systemctl daemon-reload
+# 重启docker
+systemctl docker restart
+```
+
+# docker常用命令
+
+## 有关于系统对docker的命令
+
+| 命令                   | 描述           |
+| ---------------------- | -------------- |
+| systemctl start docker | 启动docker服务 |
+| systemctl stop docker  | 停止docker服务 |
+
+## 有关于镜像的命令
+
+| 命令                      | 描述                                                         |
+| ------------------------- | ------------------------------------------------------------ |
+| docker search 镜像名      | 搜索镜像                                                     |
+| docker pull 镜像名        | 下载镜像                                                     |
+| docker images             | 列出镜像                                                     |
+| docker rmi 镜像名或镜像id | 删除镜像                                                     |
+| docker build -t xx/xxxx   | 打包镜像  # -t 表示指定镜像仓库名称/镜像名称:镜像标签 .表示使用当前目录下的Dockerfile文件 |
+
+## Docker容器常用命令
+
+| 命令                | 描述             |
+| ------------------- | ---------------- |
+| docker ps           | 列出运行中的容器 |
+| docker ps -a        | 列出所有容器     |
+| docker stop 容器id  | 停止容器         |
+| docker start 容器id | 启动容器         |
+| docker rm 容器id    | 删除指定容器     |
+| ctrl p+q            | 退出容器         |
+
+## 查看容器的日志
+
+| 命令                             | 描述                                                  |
+| -------------------------------- | ----------------------------------------------------- |
+| docker logs 容器id               | 查看容器产生的全部日志                                |
+| docker stats 容器id              | 查看指定容器资源占用状况，比如cpu、内存、网络、io状态 |
+| docker stats -a                  | 查看所有容器资源占用情况                              |
+| docker system df                 | 查看容器磁盘使用情况                                  |
+| docker exec -it 容器id /bin/bash | 执行容器内部命令                                      |
+
+# Docker安装ElasticSearch
+
+##  拉取镜像
+
+```shell
+docker pull elasticsearch:7.4.0
+```
+
+##  创建容器
+
+```shell
+docker run -id --name elasticsearch -d --restart=always -p 9200:9200 -p 9300:9300 -v /usr/share/elasticsearch/plugins:/usr/share/elasticsearch/plugins -e "discovery.type=single-node" -e ES_JAVA_OPTS="-Xms200m -Xmx200m" elasticsearch:7.4.0
+```
+
+## 配置中文分词器 ik
+
+因为在创建elasticsearch容器的时候，映射了目录，所以可以在宿主机上进行配置ik中文分词器
+
+在去选择ik分词器的时候，需要与elasticsearch的版本好对应上
+
+把资料中的`elasticsearch-analysis-ik-7.4.0.zip`上传到服务器上,放到对应目录（plugins）解压
+
+```shell
+#切换目录
+cd /usr/share/elasticsearch/plugins
+#新建目录
+mkdir analysis-ik
+cd analysis-ik
+#root根目录中拷贝文件
+mv elasticsearch-analysis-ik-7.4.0.zip /usr/share/elasticsearch/plugins/analysis-ik
+#解压文件
+cd /usr/share/elasticsearch/plugins/analysis-ik
+unzip elasticsearch-analysis-ik-7.4.0.zip
+#重启elasticsearch
+docker restart 容器id
+```
+
+## 阿里云开放9200端口
+
+
+
+## postman连接测试
+
+![image-20220716145855225](../../图片/Docker/image-20220716145855225.png)
+
+返回以下为成功
+
+![image-20220716145928725](../../图片/Docker/image-20220716145928725.png)
+
+# Docker安装kafka
+
+## 1、安装zookeeper
+
+1.1拉取镜像
+
+```
+docker pull wurstmeister/zookeeper
+```
+
+1.2 启动镜像
+
+```
+docker run -d --name zookeeper -p 2181:2181 -t wurstmeister/zookeeper
+```
+
+1.3 开通阿里云服务器2181端口
+
+![img](../../图片/Docker/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3BpYW9taWFvXw==,size_16,color_FFFFFF,t_70.png)
+
+## 2、安装kakfa
+
+2.1 拉取镜像
+
+```
+docker pull wurstmeister/kafka:2.12-2.3.1
+```
+
+2.2 启动镜像
+
+```
+docker run -d --name kafka \
+--env KAFKA_ADVERTISED_HOST_NAME=112.124.64.169 \
+--env KAFKA_ZOOKEEPER_CONNECT=112.124.64.169:2181 \
+--env KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://112.124.64.169:9092 \
+--env KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092 \
+--env KAFKA_HEAP_OPTS="-Xmx256M -Xms256M" \
+--net=host wurstmeister/kafka:2.12-2.3.1
+```
+
+ 3.3 开通阿里云服务器9092端口
+
+![img](../../图片/Docker/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3BpYW9taWFvXw==,size_16,color_FFFFFF,t_70-16577212310361.png)
+
+## 3、测试kafa是否安装成功
+
+3.1 查看是否启动成功
+
+```
+[root@iZbp1ijdf1o5r3xv8jhvaeZ ~]# docker ps
+CONTAINER ID   IMAGE                           COMMAND                  CREATED          STATUS          PORTS                                                           NAMES
+d9a1f7ae45ba   wurstmeister/kafka:2.12-2.3.1   "start-kafka.sh"         8 seconds ago    Up 5 seconds    0.0.0.0:9092->9092/tcp, :::9092->9092/tcp                       kafka
+e5df6a80f1a2   zookeeper:3.4.14                "/docker-entrypoint.…"   36 minutes ago   Up 36 minutes   2888/tcp, 0.0.0.0:2181->2181/tcp, :::2181->2181/tcp, 3888/tcp   zookeeper
+73091c751397   minio/minio                     "/usr/bin/docker-ent…"   3 weeks ago      Up 3 weeks      0.0.0.0:9000-9001->9000-9001/tcp, :::9000-9001->9000-9001/tcp   minio
+4f0c0bc6c1b5   nacos/nacos-server              "bin/docker-startup.…"   3 weeks ago      Up 3 weeks      0.0.0.0:8848->8848/tcp, :::8848->8848/tcp                       nacos
+```
+
+3.2  验证kafka是否可以使用
+
+```
+docker exec -it kafka /bin/bash
+```
+
+3.2.1 启动失败
+
+​     如出现You have to remove (or rename) that container to be able to reuse that name.**使用docker ps 时查看发现没有运行，使用 docker ps -l 查看未启动成功的容器，使用docker rm 容器id删除未启动成功的容器**
+
+3.2.2 启动成功
+
+```
+[root@iZbp1ijdf1o5r3xv8jhvaeZ ~]# docker exec -it kafka /bin/bash
+root@d9a1f7ae45ba:/# 
+```
+
+# 安装MySQL
+
+## 1、查看可用的 MySQL 版本
+
+用 **docker search mysql** 命令来查看可用版本
+
+## 2、拉取 MySQL 镜像
+
+```
+$ docker pull mysql:latest
+```
+
+## 3、查看本地镜像
+
+使用以下命令来查看是否已安装了 mysql：
+
+```
+$ docker images
+```
+
+## 4、运行容器
+
+安装完成后，我们可以使用以下命令来运行 mysql 容器：
+
+```
+$ docker run -itd --name mysql-test -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 mysql
+```
+
+参数说明：
+
+- **-p 3306:3306** ：映射容器服务的 3306 端口到宿主机的 3306 端口，外部主机可以直接通过 **宿主机ip:3306** 访问到 MySQL 的服务。
+- **MYSQL_ROOT_PASSWORD=123456**：设置 MySQL 服务 root 用户的密码。
+
+## 5、安装成功
+
+通过 **docker ps** 命令查看是否安装成功：
+
+本机可以通过 root 和密码 123456 访问 MySQL 服务。
+
+[![img](../../图片/Docker/docker-mysql7.png)](https://www.runoob.com/wp-content/uploads/2016/06/docker-mysql7.png)
+
+## 本地连接Docker中的MySQL
+
+修改root 可以通过任何客户端连接
+
+```sql
+$  ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY '123456';
+```
+
+# Docker安装Redis
+
+## 拉取Redis镜像
 
 ```java
-8、#查看hello-world镜像
-[root@localhost admin]# docker images
-REPOSITORY    TAG       IMAGE ID       CREATED        SIZE
-hello-world   latest    d1165f221234   3 months ago   13.3kB
-
-9、#卸载依赖、删除资源
-sudo yum remove docker-ce docker-ce-cli containerd.io
-sudo rm -rf /var/lib/docker			#/var/lib/docker	docker默认工作路径
+ docker pull redis
 ```
 
-## docker常用命令
-
-### 一、帮助命令
-
-docker Version
-
-docker info
-
-docker --help
-自己查看官网解释，高手都是自己练出来的，百度上只不过是翻译了下，加了点例子
+## 启动Redis指定密码
 
 ```
-docker Version
-
-docker info
-
-docker --help
-自己查看官网解释，高手都是自己练出来的，百度上只不过是翻译了下，加了点例子
+docker run -p 6379:6379 --name root \
+-v /mydata/redis/data:/data \
+-v /mydata/redis/redis.conf:/etc/redis/redis.conf \
+-d redis redis-server --appendonly yes --requirepass "123456"
 ```
 
+## 修改容器中Redis的密码
 
+### 进入redis的容器
 
-### 二、镜像命令
-
-1、docker images 列出本机上的镜像
-
-![尚硅谷Docker笔记（3）-- Docker常用命令_docker](../../图片/Docker/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_100,g_se,x_10,y_10,shadow_90,type_ZmFuZ3poZW5naGVpdGk=-16529511212974.png)
-
-OPTIONS 说明：
-
--a 列出本地所有的镜像(含中间映射层)
--q 只显示镜像ID
---digests 显示镜像的摘要信息
---no-trunc 显示完整的镜像信息
-
-```
--a 列出本地所有的镜像(含中间映射层)
--q 只显示镜像ID
---digests 显示镜像的摘要信息
---no-trunc 显示完整的镜像信息
+```bash
+docker exec -it r /bin/bash
+复制代码
 ```
 
-2、docker search 某个XXX镜像的名字
-
-![尚硅谷Docker笔记（3）-- Docker常用命令_docker_02](../../图片/Docker/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_100,g_se,x_10,y_10,shadow_90,type_ZmFuZ3poZW5naGVpdGk=-16529511580016.png)
-
-3、docker pull 某个镜像的名字
- 下载镜像
-
- docker pull 镜像名字[:TAG]
-
-
-
-4、docker rmi 某个XXX镜像的名字ID
- 删除镜像
-
- 删除单个 docker rm -f 镜像ID
-
- 删除多个 docker rm -f 镜像名1:TAG 镜像名2:TAG
-
- 删除多个 docker rmi -f ${docker images -qa}
-
-### 三、容器命令
-
-有镜像才能创建容器，这是根本前提(下载一个Centos镜像演示)
+### 运行命令：
 
 ```
-docker pull centos
+redis-cli
 ```
 
-新建并启动容器
- docker run [OPTIONS] IMAGE [COMMAND][ARG]
+### 查看现有的redis密码：
 
- OPTIONS 说明
-
-```
-OPTIONS说明（常用）：有些是一个减号，有些是两个减号
-
---name="容器新名字": 为容器指定一个名称；
--d: 后台运行容器，并返回容器ID，也即启动守护式容器；
--i：以交互模式运行容器，通常与 -t 同时使用；
--t：为容器重新分配一个伪输入终端，通常与 -i 同时使用；
--P: 随机端口映射；
--p: 指定端口映射，有以下四种格式
-      ip:hostPort:containerPort
-      ip::containerPort
-      hostPort:containerPort
-      containerPort
+```arduino
+127.0.0.1:6379> config get requirepass
+1) "requirepass"
+2) ""
 ```
 
+### 设置redis密码：
 
-启动交互式容器
-![尚硅谷Docker笔记（3）-- Docker常用命令_centos_03](../../图片/Docker/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_100,g_se,x_10,y_10,shadow_90,type_ZmFuZ3poZW5naGVpdGk=-16529512782938.png)
-
-```
-#使用镜像centos:latest以交互模式启动一个容器,在容器内执行/bin/bash命令。
-docker run -it centos /bin/bash 
+```arduino
+127.0.0.1:6379>config set requirepass ****（****为你要设置的密码）
+OK
 ```
 
-列出当前所有正在运行的容器
- dockers ps [OPTIONS]
+# Docker安装minio 
+
+## Docker 搜索Minio镜像
 
 ```
-OPTIONS说明(常用) :
--a :列出当前所有正在运行的容器+历史上运行过的
--l :显示最近创建的容器。
--n：显示最近n个创建的容器。
--q :静默模式，只显示容器编号。
---no-trunc :不截断输出。
-
+docker search minio
 ```
 
-**退出容器**
-两种退出方式
-
- exit 容器停止退出
-
- ctrl+P+Q 容器不停止退出
-
-**启动容器**
-docker start 容器ID或容器签名
-
-**重启容器**
-docker restart 容器ID或容器签名
-
-**停止容器**
-docker stop 容器ID或容器签名
-
-**强制停止容器**
-docker kill 容器ID或容器签名
-
-**删除已停止的容器**
-docker rm 容器ID -f
-
- **一次性删除多个容器**
-
- docker rm -f $(docker ps -a -q)
-
- docker ps -a -q | xargs docker rm
-
-**重要**
-启动守护式容器
-#使用镜像centos:latest以后台模式启动一个容器
-docker run -d centos
-
-问题:然后docker ps -a进行查看,会发现容器已经退出
-很重要的要说明的一点: Docker容器后台运行,就必须有一个前台进程.
-容器运行的命令如果不是那些一直挂起的命令 (比如运行top，tail) ，就是会自动退出的。
-这个是docker的机制问题,比如你的web容器，我们以nginx为例，正常情况下,我们配置启动服务只需要启动响应的service即可。例如
-service nginx start
-但是,这样做,nginx为后台进程模式运行,就导致docker前台没有运行的应用,这样的容器后台启动后，会立即自杀因为他觉得他没事可做了.所以，最佳的解决方案是将你要运行的程序以前台进程的形式运行
-
-查看容器日志
-docker logs -f -t --tail 容器ID
-
- -t 是加入时间戳
-
- -f 跟随最新的日志打印
-
- --tail 数字显示最后多少条
-
-查看容器内的进程
-docker top 容器ID
-
-查看容器内部细节
-docker inspect 容器ID
-
-进入正在运行的容器并以命令行交互
-docker exec -it 容器ID bashShell
-
-
-重新进入docker attach 容器ID
-
-上述两个区别
-
-attach 直接进入容器启动命令的终端，不会启动新的进程
-
-exec 实在容器中打开新的终端，并且可以穷的那个新的进程
-
-从容器内拷贝文件到主机上
-docker cp 容器ID:容器内路径 目的主机路径
-
-### 四、小总结
-
-![尚硅谷Docker笔记（3）-- Docker常用命令_bash_06](../../图片/Docker/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_100,g_se,x_10,y_10,shadow_90,type_ZmFuZ3poZW5naGVpdGk=.png)
+## Docker 拉取Minio镜像
 
 ```
-attach    Attach to a running container                 # 当前 shell 下 attach 连接指定运行镜像
-build     Build an image from a Dockerfile              # 通过 Dockerfile 定制镜像
-commit    Create a new image from a container changes   # 提交当前容器为新的镜像
-cp        Copy files/folders from the containers filesystem to the host path   #从容器中拷贝指定文件或者目录到宿主机中
-create    Create a new container                        # 创建一个新的容器，同 run，但不启动容器
-diff      Inspect changes on a container's filesystem   # 查看 docker 容器变化
-events    Get real time events from the server          # 从 docker 服务获取容器实时事件
-exec      Run a command in an existing container        # 在已存在的容器上运行命令
-export    Stream the contents of a container as a tar archive   # 导出容器的内容流作为一个 tar 归档文件[对应 import ]
-history   Show the history of an image                  # 展示一个镜像形成历史
-images    List images                                   # 列出系统当前镜像
-import    Create a new filesystem image from the contents of a tarball # 从tar包中的内容创建一个新的文件系统映像[对应export]
-info      Display system-wide information               # 显示系统相关信息
-inspect   Return low-level information on a container   # 查看容器详细信息
-kill      Kill a running container                      # kill 指定 docker 容器
-load      Load an image from a tar archive              # 从一个 tar 包中加载一个镜像[对应 save]
-login     Register or Login to the docker registry server    # 注册或者登陆一个 docker 源服务器
-logout    Log out from a Docker registry server          # 从当前 Docker registry 退出
-logs      Fetch the logs of a container                 # 输出当前容器日志信息
-port      Lookup the public-facing port which is NAT-ed to PRIVATE_PORT    # 查看映射端口对应的容器内部源端口
-pause     Pause all processes within a container        # 暂停容器
-ps        List containers                               # 列出容器列表
-pull      Pull an image or a repository from the docker registry server   # 从docker镜像源服务器拉取指定镜像或者库镜像
-push      Push an image or a repository to the docker registry server    # 推送指定镜像或者库镜像至docker源服务器
-restart   Restart a running container                   # 重启运行的容器
-rm        Remove one or more containers                 # 移除一个或者多个容器
-rmi       Remove one or more images             # 移除一个或多个镜像[无容器使用该镜像才可删除，否则需删除相关容器才可继续或 -f 强制删除]
-run       Run a command in a new container              # 创建一个新的容器并运行一个命令
-save      Save an image to a tar archive                # 保存一个镜像为一个 tar 包[对应 load]
-search    Search for an image on the Docker Hub         # 在 docker hub 中搜索镜像
-start     Start a stopped containers                    # 启动容器
-stop      Stop a running containers                     # 停止容器
-tag       Tag an image into a repository                # 给源中镜像打标签
-top       Lookup the running processes of a container   # 查看容器中运行的进程信息
-unpause   Unpause a paused container                    # 取消暂停容器
-version   Show the docker version information           # 查看 docker 版本号
-wait      Block until a container stops, then print its exit code   # 截取容器停止时的退出状态值
+docker pull minio/minio
 ```
 
-## 在docker容器中安装新的工具
-
-比如：
+## Docker 启动Minio镜像
 
 ```
-//先更新包管理工具
-apt-get update
-//然后安装我们需要的工具，以vim为例
-
+#最近更新的命令
+docker run -d \
+  -p 9000:9000 \
+  -p 9001:9001 \
+  --name minio \
+  -v /home/minio/data:/data \
+  -e "MINIO_ROOT_USER=minio" \
+  -e "MINIO_ROOT_PASSWORD=minio1" \
+  minio/minio server /data --console-address ":9001"
 ```
 

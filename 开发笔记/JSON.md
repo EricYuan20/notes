@@ -62,8 +62,8 @@ for (Object obj : mapType.keySet()) {
 
 //第四种
 /**
-     * JSONObject是Map接口的一个实现类
-     */
+ * JSONObject是Map接口的一个实现类
+ */
 Map json = (Map) JSONObject.parse(str);
 
 //第五种
