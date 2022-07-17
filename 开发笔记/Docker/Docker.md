@@ -367,29 +367,79 @@ OK
 
 # Docker安装minio 
 
-## Docker 搜索Minio镜像
-
-```
-docker search minio
-```
-
 ## Docker 拉取Minio镜像
 
 ```
-docker pull minio/minio
+docker pull minio/minio:RELEASE.2021-06-17T00-10-46Z
 ```
 
 ## Docker 启动Minio镜像
 
 ```
-#最近更新的命令
-docker run -d \
-  -p 9000:9000 \
-  -p 9001:9001 \
-  --name minio \
-  -v /home/minio/data:/data \
-  -e "MINIO_ROOT_USER=minio" \
-  -e "MINIO_ROOT_PASSWORD=minio1" \
-  minio/minio server /data --console-address ":9001"
+docker run -d -p 9000:9000 --name minio\
+  -e "MINIO_ACCESS_KEY=admin" \
+  -e "MINIO_SECRET_KEY=adminminio" \
+  -v /usr/local/minio/data:/data \
+  -v /usr/local/minio/config:/root/.minio \
+  minio/minio:RELEASE.2021-06-17T00-10-46Z server /data
 ```
 
+## 永久有效链接配置
+
+### Docker 获取 minio/mc容器
+
+```
+docker pull minio/mc:RELEASE.2021-06-13T17-48-22Z
+```
+
+### Docker 启动 minio/mc容器
+
+```
+docker run -it --entrypoint=/bin/sh minio/mc:RELEASE.2021-06-13T17-48-22Z
+```
+
+启动之后 会直接 进入 `sh-4.4#` 输入mc version 查看版本信息
+
+![image-20220717163131119](../../图片/Docker/image-20220717163131119.png)
+
+### minio/mc 绑定 minio server服务
+
+```
+mc config host add <ALIAS> <YOUR-S3-ENDPOINT> <YOUR-ACCESS-KEY> <YOUR-SECRET-KEY> [--api API-SIGNATURE]
+mc config host add minio http://IP地址:9000 admin adminminio  --api S3v4
+```
+
+> 1. ALIAS: 别名就是给你的云存储服务起了一个短点的外号。
+> 2. S3 endpoint,access key和secret key是你的云存储服务提供的。
+> 3. endpoint [http://IP地址:9000](https://link.juejin.cn?target=http%3A%2F%2FIP%E5%9C%B0%E5%9D%80%3A9000)
+> 4. access key、secret key 账号密码： admin adminminio。
+> 5. API签名是可选参数，默认情况下，它被设置为"S3v4"。
+
+绑定成功
+
+![image-20220717163450668](../../图片/Docker/image-20220717163450668.png)
+
+### mc命令
+
+```
+#查看所用的桶
+mc ls minio
+```
+
+### 设置桶或者目录的访问权限为public（设置公开访问 永久访问链接）
+
+```
+mc policy set public minio/test-bucket/public      //将minio中，test-bucket存储桶下的
+public目录设置为公开可访问
+mc policy set public  minio/test-bucket2  //将minio中，test-bucket2存储桶设置为公开可访问
+```
+
+```
+mc policy set public  minio/test
+```
+
+设置成功
+
+![image-20220717163651953](../../图片/Docker/image-20220717163651953.png)
+
+http://IP地址:9000/桶名/demo.png
