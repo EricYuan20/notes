@@ -443,3 +443,21 @@ mc policy set public  minio/test
 ![image-20220717163651953](../../图片/Docker/image-20220717163651953.png)
 
 http://IP地址:9000/桶名/demo.png
+
+# docker安装MongoDb
+
+#### 安装MongoDB
+
+拉取镜像
+
+```
+docker pull mongo
+```
+
+创建容器
+
+```
+docker run -di --name mongo-service --restart=always -p 27017:27017 -v ~/data/mongodata:/data mongo
+```
+
+#### 阿里云开放27017端口
