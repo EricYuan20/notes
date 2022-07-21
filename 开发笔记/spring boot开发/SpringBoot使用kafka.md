@@ -2,11 +2,11 @@
 
 Kafka 是一个分布式流媒体平台,类似于消息队列或企业消息传递系统。kafka官网：http://kafka.apache.org/  
 
-![image-20210525181028436](../图片/SpringBoot使用kafka/image-20210525181028436.png)
+![image-20210525181028436](../../图片/SpringBoot使用kafka/image-20210525181028436.png)
 
 kafka介绍-名词解释
 
-![image-20210525181100793](../图片/SpringBoot使用kafka/image-20210525181100793.png)
+![image-20210525181100793](../../图片/SpringBoot使用kafka/image-20210525181100793.png)
 
 - producer：发布消息的对象称之为主题生产者（Kafka topic producer）
 
@@ -178,7 +178,7 @@ producer.send(kvProducerRecord, new Callback() {
 
 - ack
 
-![image-20210530224302935](../图片/SpringBoot使用kafka/image-20210530224302935.png)
+![image-20210530224302935](../../图片/SpringBoot使用kafka/image-20210530224302935.png)
 
 代码的配置方式：
 
@@ -197,7 +197,7 @@ prop.put(ProducerConfig.ACKS_CONFIG,"all");
 
 - retries
 
-![image-20210530224406689](../图片/SpringBoot使用kafka/image-20210530224406689.png)
+![image-20210530224406689](../../图片/SpringBoot使用kafka/image-20210530224406689.png)
 
 生产者从服务器收到的错误有可能是临时性错误，在这种情况下，retries参数的值决定了生产者可以重发消息的次数，如果达到这个次数，生产者会放弃重试返回错误，默认情况下，生产者会在每次重试之间等待100ms
 
@@ -231,7 +231,7 @@ prop.put(ProducerConfig.COMPRESSION_TYPE_CONFIG,"lz4");
 
 ## 消费者组
 
-![image-20210530224706747](../图片/SpringBoot使用kafka/image-20210530224706747.png)
+![image-20210530224706747](../../图片/SpringBoot使用kafka/image-20210530224706747.png)
 
 - 消费者组（Consumer Group） ：指的就是由一个或多个消费者组成的群体
 
@@ -249,7 +249,7 @@ prop.put(ProducerConfig.COMPRESSION_TYPE_CONFIG,"lz4");
 
 - 充值转账两个渠道在同一个时间进行余额变更，短信通知必须要有顺序
 
-![image-20210530224903891](../图片/SpringBoot使用kafka/image-20210530224903891.png)
+![image-20210530224903891](../../图片/SpringBoot使用kafka/image-20210530224903891.png)
 
 topic分区中消息只能由消费者组中的唯一一个消费者处理，所以消息肯定是按照先后顺序进行处理的。但是它也仅仅是保证Topic的一个分区顺序处理，不能保证跨分区的消息先后处理顺序。 所以，如果你想要顺序的处理Topic的所有消息，那就只提供一个分区。
 
@@ -259,11 +259,11 @@ kafka不会像其他JMS队列那样需要得到消费者的确认，消费者可
 
 消费者会往一个叫做_consumer_offset的特殊主题发送消息，消息里包含了每个分区的偏移量。如果消费者发生崩溃或有新的消费者加入群组，就会触发再均衡
 
-![image-20210530225021266](../图片/SpringBoot使用kafka/image-20210530225021266.png)
+![image-20210530225021266](../../图片/SpringBoot使用kafka/image-20210530225021266.png)
 
 正常的情况
 
-![image-20210530224959350](../图片/SpringBoot使用kafka/image-20210530224959350.png)
+![image-20210530224959350](../../图片/SpringBoot使用kafka/image-20210530224959350.png)
 
 如果消费者2挂掉以后，会发生再均衡，消费者2负责的分区会被其他消费者进行消费
 
@@ -271,7 +271,7 @@ kafka不会像其他JMS队列那样需要得到消费者的确认，消费者可
 
 问题一：
 
-![image-20210530225215337](../图片/SpringBoot使用kafka/image-20210530225215337.png)
+![image-20210530225215337](../../图片/SpringBoot使用kafka/image-20210530225215337.png)
 
 如果提交偏移量小于客户端处理的最后一个消息的偏移量，那么处于两个偏移量之间的消息就会被重复处理。
 
@@ -279,7 +279,7 @@ kafka不会像其他JMS队列那样需要得到消费者的确认，消费者可
 
 问题二：
 
-![image-20210530225239897](../图片/SpringBoot使用kafka/image-20210530225239897.png)
+![image-20210530225239897](../../图片/SpringBoot使用kafka/image-20210530225239897.png)
 
 如果提交的偏移量大于客户端的最后一个消息的偏移量，那么处于两个偏移量之间的消息将会丢失。
 
